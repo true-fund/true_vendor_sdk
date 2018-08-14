@@ -16,6 +16,11 @@ type VendorApp struct {
 }
 
 
+type TrueService interface {
+	CreateEntity(description, url, language, id string)(shared.IDContainer, error)
+}
+
+
 func NewApplication(Key, Secret string)*VendorApp {
 	return &VendorApp{key:Key, secret:Secret}
 }
