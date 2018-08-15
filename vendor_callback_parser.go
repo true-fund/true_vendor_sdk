@@ -19,5 +19,7 @@ func resolveVerificationValidatorMap()httputils.VMap{
 	return httputils.VMap{
 		"id": httputils.RequiredStringValidators("id"),
 		"token": httputils.RequiredStringValidators("token"),
+		"verdict": httputils.RequiredStringValidators("verdict"),
+		"note": httputils.RequiredStringValidators("note"),
 	}
 }

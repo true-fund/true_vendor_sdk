@@ -66,6 +66,7 @@ func (self *VendorCallbackHandler)ResolveVerification(w http.ResponseWriter, r *
 	if err != nil{
 		err.(httputils.ServerError).Write(w)
 	}
-	token, err := self.useCase.ResolvingVerification(body["id"].(string), body["token"].(string))
+	token, err := self.useCase.ResolvingVerification(body["id"].(string), body["token"].(string),  body["verdict"].(string),
+		body["note"].(string))
 	self.writeMapOrError(w, map[string]interface{}{"token":token}, err)
 }
