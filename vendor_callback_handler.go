@@ -16,6 +16,14 @@ func NewVendorCallbackHandler(useCase VendorUseCase)*VendorCallbackHandler{
 
 
 
+func (self *VendorCallbackHandler)RegisterAPI(router *httputils.Router){
+	router.Post("/vendor/reserve", http.HandlerFunc(self.ReserveVerificationHandler))
+	router.Post("/vendor/reserve/callback", http.HandlerFunc(self.ReserveCallbackHandler))
+	router.Post("/vendor/cancel", http.HandlerFunc(self.CancelReserveHandler))
+	router.Post("/vendor/resolve", http.HandlerFunc(self.ResolveVerification))
+	router.Post("/vendor/resolve/callback", http.HandlerFunc(self.ResolveCallbackHandler))
+}
+
 func(self *VendorCallbackHandler)writeMapOrError(w http.ResponseWriter, m map[string]interface{}, err error){
 	if err != nil{
 	 	shared.NewServerError(400, "undefined", err.Error(), "VENDOR_ERROR").Write(w)
