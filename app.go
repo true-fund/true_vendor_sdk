@@ -18,6 +18,7 @@ type VendorApp struct {
 
 type TrueService interface {
 	CreateEntity(description, url, language, id string)(shared.IDContainer, error)
+	DeleteEntity(id string)(shared.IDContainer, error)
 }
 
 
@@ -25,6 +26,12 @@ func NewApplication(Key, Secret string)*VendorApp {
 	return &VendorApp{key:Key, secret:Secret}
 }
 
+
+func (self *VendorApp)DeleteEntity(id string)(shared.IDContainer, error){
+	container := shared.IDContainer{}
+	err := self.makeRequest("https://trueapi.alexmay23.com/vendor/entity/delete", map[string]interface{}{"id": id}, &container)
+	return container, err
+}
 
 func (self *VendorApp)CreateEntity(description, url, language, id string)(shared.IDContainer, error){
 	container := shared.IDContainer{}
@@ -58,7 +65,7 @@ func (self *VendorApp)makeRequest(url string, parameters map[string]interface{},
 		if err != nil {
 			return err
 		}
-		return serverErrors
+		return  httputils.ServerError{resp.StatusCode, serverErrors}
 	} else{
 		err = decoder.Decode(value)
 		if err != nil {
