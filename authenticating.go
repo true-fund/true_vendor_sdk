@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	EntityIDKey  = "entity_id"
-	AssistantKey = "assistant_id"
+	EntityKey    = "entity"
+	AssistantKey = "assistant"
 )
 
 var (
@@ -30,7 +30,7 @@ func (self *DefaultAuthenticating) ValidateTokenFor(token, assistantId, entityId
 	if err != nil {
 		return failedToken.AsServerError(400)
 	}
-	if data[AssistantKey] == assistantId && data[EntityIDKey] == entityId {
+	if data[AssistantKey].(string) == assistantId && data[EntityKey].(string) == entityId {
 		return nil
 	}
 	return accessDeniedError.AsServerError(403)
@@ -41,7 +41,7 @@ func NewDefaultAuthenticating(secret string) *DefaultAuthenticating {
 }
 
 func (self *DefaultAuthenticating) GenerateTokenFor(assistantID, entityId string) (string, error) {
-	return self.generateToken(map[string]string{"assistant": assistantID, "entity": entityId})
+	return self.generateToken(map[string]string{AssistantKey: assistantID, EntityKey: entityId})
 }
 
 func (self *DefaultAuthenticating) getDataFromToken(token string) (map[string]interface{}, error) {
@@ -56,12 +56,12 @@ func (self *DefaultAuthenticating) getDataFromToken(token string) (map[string]in
 	}
 	claims, ok := tokenObj.Claims.(jwt.MapClaims)
 	if ok && tokenObj.Valid {
-		return claims, nil
+		return claims["value"].(map[string]interface{}), nil
 	}
 	return nil, failedToken.AsServerError(400)
 }
 
-func (self *DefaultAuthenticating) generateToken(value interface{}) (string, error) {
+func (self *DefaultAuthenticating) generateToken(value map[string]string) (string, error) {
 	claims := struct {
 		Value interface{} `json:"value"`
 		jwt.StandardClaims

@@ -17,7 +17,7 @@ type VendorApp struct {
 
 
 type TrueService interface {
-	CreateEntity(description, url, language, id string)(shared.IDContainer, error)
+	CreateEntity(description, url, language, id string, location *shared.ObjectLocation)(shared.IDContainer, error)
 	DeleteEntity(id string)(shared.IDContainer, error)
 }
 
@@ -29,14 +29,24 @@ func NewApplication(Key, Secret string)*VendorApp {
 
 func (self *VendorApp)DeleteEntity(id string)(shared.IDContainer, error){
 	container := shared.IDContainer{}
-	err := self.makeRequest("https://trueapi.alexmay23.com/vendor/entity/delete", map[string]interface{}{"id": id}, &container)
+	//
+	trueURL := "https://trueapi.alexmay23.com/vendor/entity/delete"
+	trueURL = "http://192.168.88.248:5555/vendor/entity/delete"
+	err := self.makeRequest(trueURL, map[string]interface{}{"id": id}, &container)
 	return container, err
 }
 
-func (self *VendorApp)CreateEntity(description, url, language, id string)(shared.IDContainer, error){
+func (self *VendorApp)CreateEntity(description, url, language, id string, location *shared.ObjectLocation)(shared.IDContainer, error){
 	container := shared.IDContainer{}
-	err := self.makeRequest("https://trueapi.alexmay23.com/vendor/entity", map[string]interface{}{"description":description,
-	"language":language, "url": url, "client_uid": id}, &container)
+	params :=  map[string]interface{}{"description":description,
+		"language":language, "url": url, "client_uid": id}
+	if location != nil{
+		params["latitude"] = location.Coordinates[1]
+		params["longitude"] = location.Coordinates[0]
+	}
+	trueURL := "https://trueapi.alexmay23.com/vendor/entity"
+	trueURL = "http://192.168.88.248:5555/vendor/entity"
+	err := self.makeRequest(trueURL ,params, &container)
 	return container, err
 }
 
