@@ -26,6 +26,10 @@ func (self *VendorCallbackHandler)RegisterAPI(router *httputils.Router){
 
 func(self *VendorCallbackHandler)writeMapOrError(w http.ResponseWriter, m map[string]interface{}, err error){
 	if err != nil{
+		if serverError, ok := err.(httputils.ServerError); ok{
+			serverError.Write(w)
+			return
+		}
 	 	shared.NewServerError(400, "undefined", err.Error(), "VENDOR_ERROR").Write(w)
 	}else{
 		httputils.JSON(w, m, 200)

@@ -30,8 +30,7 @@ func NewApplication(Key, Secret string)*VendorApp {
 func (self *VendorApp)DeleteEntity(id string)(shared.IDContainer, error){
 	container := shared.IDContainer{}
 	//
-	trueURL := "https://trueapi.alexmay23.com/vendor/entity/delete"
-	trueURL = "http://192.168.88.248:5555/vendor/entity/delete"
+	trueURL := "https://api.true-fund.com/vendor/entity/delete"
 	err := self.makeRequest(trueURL, map[string]interface{}{"id": id}, &container)
 	return container, err
 }
@@ -44,8 +43,7 @@ func (self *VendorApp)CreateEntity(description, url, language, id string, locati
 		params["latitude"] = location.Coordinates[1]
 		params["longitude"] = location.Coordinates[0]
 	}
-	trueURL := "https://trueapi.alexmay23.com/vendor/entity"
-	trueURL = "http://192.168.88.248:5555/vendor/entity"
+	trueURL := "https://api.true-fund.com/vendor/entity"
 	err := self.makeRequest(trueURL ,params, &container)
 	return container, err
 }
