@@ -20,8 +20,13 @@ func NewVendorCallbackHandler(useCase VendorUseCase) *VendorCallbackHandler {
 	return &VendorCallbackHandler{useCase: useCase}
 }
 
+// PostRegistrable is a Router with register Post handlers
+type PostRegistrable interface {
+	Post(route string, handler http.Handler)
+}
+
 // RegisterAPI in  router
-func (handler *VendorCallbackHandler) RegisterAPI(router *gohttplib.Router) {
+func (handler *VendorCallbackHandler) RegisterAPI(router PostRegistrable) {
 	router.Post("/vendor/reserve", http.HandlerFunc(handler.ReserveVerificationHandler))
 	router.Post("/vendor/reserve/callback", http.HandlerFunc(handler.ReserveCallbackHandler))
 	router.Post("/vendor/cancel", http.HandlerFunc(handler.CancelReserveHandler))
