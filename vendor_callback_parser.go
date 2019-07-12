@@ -1,25 +1,27 @@
 package true_vendor_sdk
 
-import "github.com/alexmay23/httputils"
+import (
+	"github.com/wolvesdev/gohttplib/validator"
+)
 
-func reserveVerificationValidatorMap()httputils.VMap{
-	return httputils.VMap{
-		"id": httputils.RequiredStringValidators("id"),
-		"user_id": httputils.RequiredStringValidators("user_id"),
+func reserveVerificationValidatorMap() validator.VMap {
+	return validator.VMap{
+		"id":      validator.RequiredStringValidators("id"),
+		"user_id": validator.RequiredStringValidators("user_id"),
 	}
 }
 
-func idValidatorMap()httputils.VMap{
-	return httputils.VMap{
-		"id": httputils.RequiredStringValidators("id"),
+func idValidatorMap() validator.VMap {
+	return validator.VMap{
+		"id": validator.RequiredStringValidators("id"),
 	}
 }
 
-func resolveVerificationValidatorMap()httputils.VMap{
-	return httputils.VMap{
-		"id": httputils.RequiredStringValidators("id"),
-		"token": httputils.RequiredStringValidators("token"),
-		"verdict": httputils.RequiredStringValidators("verdict"),
-		"note": httputils.RequiredStringValidators("note"),
+func resolveVerificationValidatorMap() validator.VMap {
+	return validator.VMap{
+		"id":      validator.RequiredStringValidators("id"),
+		"token":   validator.RequiredStringValidators("token"),
+		"verdict": validator.RequiredStringValidators("verdict"),
+		"note":    validator.RequiredStringValidators("note"),
 	}
 }

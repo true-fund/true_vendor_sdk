@@ -2,83 +2,94 @@ package true_vendor_sdk
 
 import (
 	"net/http"
-	"github.com/alexmay23/httpshared/shared"
-	"github.com/alexmay23/httputils"
+
+	"github.com/wolvesdev/gohttplib"
+	"github.com/wolvesdev/gohttplib/validator"
 )
 
+// OKJSON  is default response for ok
+var OKJSON = map[string]interface{}{"ok": 1}
+
+// VendorCallbackHandler callback handler for vendor api
 type VendorCallbackHandler struct {
 	useCase VendorUseCase
 }
 
-func NewVendorCallbackHandler(useCase VendorUseCase)*VendorCallbackHandler{
-	return &VendorCallbackHandler{useCase:useCase}
+// NewVendorCallbackHandler is init for VendorCallbackHandler
+func NewVendorCallbackHandler(useCase VendorUseCase) *VendorCallbackHandler {
+	return &VendorCallbackHandler{useCase: useCase}
 }
 
-
-
-func (self *VendorCallbackHandler)RegisterAPI(router *httputils.Router){
-	router.Post("/vendor/reserve", http.HandlerFunc(self.ReserveVerificationHandler))
-	router.Post("/vendor/reserve/callback", http.HandlerFunc(self.ReserveCallbackHandler))
-	router.Post("/vendor/cancel", http.HandlerFunc(self.CancelReserveHandler))
-	router.Post("/vendor/resolve", http.HandlerFunc(self.ResolveVerification))
-	router.Post("/vendor/resolve/callback", http.HandlerFunc(self.ResolveCallbackHandler))
+// RegisterAPI in  router
+func (handler *VendorCallbackHandler) RegisterAPI(router *gohttplib.Router) {
+	router.Post("/vendor/reserve", http.HandlerFunc(handler.ReserveVerificationHandler))
+	router.Post("/vendor/reserve/callback", http.HandlerFunc(handler.ReserveCallbackHandler))
+	router.Post("/vendor/cancel", http.HandlerFunc(handler.CancelReserveHandler))
+	router.Post("/vendor/resolve", http.HandlerFunc(handler.ResolveVerification))
+	router.Post("/vendor/resolve/callback", http.HandlerFunc(handler.ResolveCallbackHandler))
 }
 
-func(self *VendorCallbackHandler)writeMapOrError(w http.ResponseWriter, m map[string]interface{}, err error){
-	if err != nil{
-		if serverError, ok := err.(httputils.ServerError); ok{
+func (handler *VendorCallbackHandler) writeMapOrError(w http.ResponseWriter, m map[string]interface{}, err error) {
+	if err != nil {
+		if serverError, ok := err.(gohttplib.ServerError); ok {
 			serverError.Write(w)
 			return
 		}
-	 	shared.NewServerError(400, "undefined", err.Error(), "VENDOR_ERROR").Write(w)
-	}else{
-		httputils.JSON(w, m, 200)
+		description := err.Error()
+		code := "VENDOR_ERROR"
+		gohttplib.NewServerError(400, "undefined", &description, &code, nil).Write(w)
+	} else {
+		gohttplib.WriteJson(w, m, 200)
 	}
 }
 
-
-func(self *VendorCallbackHandler)ReserveVerificationHandler(w http.ResponseWriter, r *http.Request){
-	body, err := httputils.GetValidatedBody(r, reserveVerificationValidatorMap())
-	if err != nil{
-		err.(httputils.ServerError).Write(w)
+//ReserveVerificationHandler implementation
+func (self *VendorCallbackHandler) ReserveVerificationHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := validator.GetValidatedBody(r, reserveVerificationValidatorMap())
+	if err != nil {
+		err.(gohttplib.ServerError).Write(w)
 	}
 	token, err := self.useCase.ReservationVerification(body["id"].(string), body["user_id"].(string))
-	self.writeMapOrError(w, map[string]interface{}{"token":token}, err)
+	self.writeMapOrError(w, map[string]interface{}{"token": token}, err)
 }
 
-func(self *VendorCallbackHandler)ReserveCallbackHandler(w http.ResponseWriter, r *http.Request){
-	body, err := httputils.GetValidatedBody(r, idValidatorMap())
-	if err != nil{
-		err.(httputils.ServerError).Write(w)
+//ReserveCallbackHandler implementation
+func (handler *VendorCallbackHandler) ReserveCallbackHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := validator.GetValidatedBody(r, idValidatorMap())
+	if err != nil {
+		err.(gohttplib.ServerError).Write(w)
 	}
-	err = self.useCase.ReservedCallback(body["id"].(string))
-	self.writeMapOrError(w, shared.OKJSON, err)
+	err = handler.useCase.ReservedCallback(body["id"].(string))
+	handler.writeMapOrError(w, OKJSON, err)
 }
 
-func(self *VendorCallbackHandler)ResolveCallbackHandler(w http.ResponseWriter, r *http.Request){
-	body, err := httputils.GetValidatedBody(r, idValidatorMap())
-	if err != nil{
-		err.(httputils.ServerError).Write(w)
+//ResolveCallbackHandler implementation
+func (handler *VendorCallbackHandler) ResolveCallbackHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := validator.GetValidatedBody(r, idValidatorMap())
+	if err != nil {
+		err.(gohttplib.ServerError).Write(w)
 	}
-	err = self.useCase.ResolvingCallback(body["id"].(string))
-	self.writeMapOrError(w, shared.OKJSON, err)
+	err = handler.useCase.ResolvingCallback(body["id"].(string))
+	handler.writeMapOrError(w, OKJSON, err)
 }
 
-func(self *VendorCallbackHandler)CancelReserveHandler(w http.ResponseWriter, r *http.Request){
-	body, err := httputils.GetValidatedBody(r, idValidatorMap())
-	if err != nil{
-		err.(httputils.ServerError).Write(w)
+//CancelReserveHandler implementation
+func (handler *VendorCallbackHandler) CancelReserveHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := validator.GetValidatedBody(r, idValidatorMap())
+	if err != nil {
+		err.(gohttplib.ServerError).Write(w)
 	}
-	err = self.useCase.CancelReservationCallback(body["id"].(string))
-	self.writeMapOrError(w, shared.OKJSON, err)
+	err = handler.useCase.CancelReservationCallback(body["id"].(string))
+	handler.writeMapOrError(w, OKJSON, err)
 }
 
-func (self *VendorCallbackHandler)ResolveVerification(w http.ResponseWriter, r *http.Request){
-	body, err := httputils.GetValidatedBody(r, resolveVerificationValidatorMap())
-	if err != nil{
-		err.(httputils.ServerError).Write(w)
+//ResolveVerification implementation
+func (handler *VendorCallbackHandler) ResolveVerification(w http.ResponseWriter, r *http.Request) {
+	body, err := validator.GetValidatedBody(r, resolveVerificationValidatorMap())
+	if err != nil {
+		err.(gohttplib.ServerError).Write(w)
 	}
-	token, err := self.useCase.ResolvingVerification(body["id"].(string), body["token"].(string),  body["verdict"].(string),
+	token, err := handler.useCase.ResolvingVerification(body["id"].(string), body["token"].(string), body["verdict"].(string),
 		body["note"].(string))
-	self.writeMapOrError(w, map[string]interface{}{"token":token}, err)
+	handler.writeMapOrError(w, map[string]interface{}{"token": token}, err)
 }
