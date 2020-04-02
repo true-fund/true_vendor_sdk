@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/wolvesdev/gohttplib"
+	"github.com/techpro-studio/gohttplib"
 )
 
 // Keys

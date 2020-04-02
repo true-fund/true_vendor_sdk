@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/wolvesdev/gohttplib"
+	"github.com/techpro-studio/gohttplib"
 )
 
 // VendorApp is an vendor applications structure

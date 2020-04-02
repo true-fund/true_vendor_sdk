@@ -1,7 +1,7 @@
 package true_vendor_sdk
 
 import (
-	"github.com/wolvesdev/gohttplib/validator"
+	"github.com/techpro-studio/gohttplib/validator"
 )
 
 func reserveVerificationValidatorMap() validator.VMap {

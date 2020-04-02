@@ -3,8 +3,8 @@ package true_vendor_sdk
 import (
 	"net/http"
 
-	"github.com/wolvesdev/gohttplib"
-	"github.com/wolvesdev/gohttplib/validator"
+	"github.com/techpro-studio/gohttplib"
+	"github.com/techpro-studio/gohttplib/validator"
 )
 
 // OKJSON  is default response for ok
@@ -42,7 +42,7 @@ func (handler *VendorCallbackHandler) writeMapOrError(w http.ResponseWriter, m m
 		}
 		description := err.Error()
 		code := "VENDOR_ERROR"
-		gohttplib.NewServerError(400, "undefined", &description, &code, nil).Write(w)
+		gohttplib.NewServerError(400, "undefined", description, code, nil).Write(w)
 	} else {
 		gohttplib.WriteJson(w, m, 200)
 	}
