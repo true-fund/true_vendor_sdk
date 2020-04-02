@@ -4,10 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"github.com/techpro-studio/gohttplib"
 	"net/http"
 	"time"
-
-	"github.com/techpro-studio/gohttplib"
 )
 
 // VendorApp is an vendor applications structure
