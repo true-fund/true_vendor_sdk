@@ -47,53 +47,53 @@ func (handler *VendorCallbackHandler) writeMapOrError(w http.ResponseWriter, m m
 	}
 }
 
-//ReserveVerificationHandler implementation
+// ReserveVerificationHandler implementation
 func (self *VendorCallbackHandler) ReserveVerificationHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := validator.GetValidatedBody(r, reserveVerificationValidatorMap())
 	if err != nil {
 		err.(gohttplib.ServerError).Write(w)
 	}
-	token, err := self.useCase.ReservationVerification(body["id"].(string), body["user_id"].(string))
+	token, err := self.useCase.ReservationVerification(r.Context(), body["id"].(string), body["user_id"].(string))
 	self.writeMapOrError(w, map[string]interface{}{"token": token}, err)
 }
 
-//ReserveCallbackHandler implementation
+// ReserveCallbackHandler implementation
 func (handler *VendorCallbackHandler) ReserveCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := validator.GetValidatedBody(r, idValidatorMap())
 	if err != nil {
 		err.(gohttplib.ServerError).Write(w)
 	}
-	err = handler.useCase.ReservedCallback(body["id"].(string))
+	err = handler.useCase.ReservedCallback(r.Context(), body["id"].(string))
 	handler.writeMapOrError(w, OKJSON, err)
 }
 
-//ResolveCallbackHandler implementation
+// ResolveCallbackHandler implementation
 func (handler *VendorCallbackHandler) ResolveCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := validator.GetValidatedBody(r, idValidatorMap())
 	if err != nil {
 		err.(gohttplib.ServerError).Write(w)
 	}
-	err = handler.useCase.ResolvingCallback(body["id"].(string))
+	err = handler.useCase.ResolvingCallback(r.Context(), body["id"].(string))
 	handler.writeMapOrError(w, OKJSON, err)
 }
 
-//CancelReserveHandler implementation
+// CancelReserveHandler implementation
 func (handler *VendorCallbackHandler) CancelReserveHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := validator.GetValidatedBody(r, idValidatorMap())
 	if err != nil {
 		err.(gohttplib.ServerError).Write(w)
 	}
-	err = handler.useCase.CancelReservationCallback(body["id"].(string))
+	err = handler.useCase.CancelReservationCallback(r.Context(), body["id"].(string))
 	handler.writeMapOrError(w, OKJSON, err)
 }
 
-//ResolveVerification implementation
+// ResolveVerification implementation
 func (handler *VendorCallbackHandler) ResolveVerification(w http.ResponseWriter, r *http.Request) {
 	body, err := validator.GetValidatedBody(r, resolveVerificationValidatorMap())
 	if err != nil {
 		err.(gohttplib.ServerError).Write(w)
 	}
-	token, err := handler.useCase.ResolvingVerification(body["id"].(string), body["token"].(string), body["verdict"].(string),
+	token, err := handler.useCase.ResolvingVerification(r.Context(), body["id"].(string), body["token"].(string), body["verdict"].(string),
 		body["note"].(string))
 	handler.writeMapOrError(w, map[string]interface{}{"token": token}, err)
 }

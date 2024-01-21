@@ -21,7 +21,7 @@ type TrueService interface {
 	DeleteEntity(id string) (gohttplib.IDContainer, error)
 }
 
-//ObjectLocation is an object location struct
+// ObjectLocation is an object location struct
 type ObjectLocation struct {
 	Latitude  float64
 	Longitude float64
@@ -57,6 +57,7 @@ func (app *VendorApp) CreateEntity(description, url, language, id string, locati
 
 func (app *VendorApp) makeRequest(url string, parameters map[string]interface{}, value interface{}) error {
 	ctx, cancelFn := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelFn()
 	b, err := json.Marshal(parameters)
 	if err != nil {
 		cancelFn()
